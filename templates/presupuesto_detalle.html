@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% block title %}Presupuesto #{{ p.id }}{% endblock %}
+{% block content %}
+<div class="page-header mb-3">
+  <div class="row align-items-center flex-wrap gap-2">
+    <div class="col-auto"><a href="/presupuestos" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i>Volver</a></div>
+    <div class="col"><h2 class="page-title mb-0">Presupuesto <span class="text-muted fw-normal">#{{ p.id }}</span></h2></div>
+    <div class="col-auto d-flex gap-2 flex-wrap">
+      <a href="/presupuestos/{{ p.id }}/imprimir" target="_blank" class="btn btn-sm btn-outline-secondary"><i class="bi bi-printer me-1"></i>Imprimir</a>
+      <a href="/presupuestos/{{ p.id }}/editar" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil me-1"></i>Editar</a>
+      {% if p.estado != 'aprobado' %}
+      <form method="post" action="/presupuestos/{{ p.id }}/estado/aprobado" class="d-inline">
+        <button class="btn btn-sm btn-success"><i class="bi bi-check me-1"></i>Aprobar</button>
+      </form>
+      {% endif %}
+      {% if p.estado != 'rechazado' %}
+      <form method="post" action="/presupuestos/{{ p.id }}/estado/rechazado" class="d-inline">
+        <button class="btn btn-sm btn-outline-danger"><i class="bi bi-x me-1"></i>Rechazar</button>
+      </form>
+      {% endif %}
+      <form method="post" action="/presupuestos/{{ p.id }}/eliminar" class="d-inline" onsubmit="return confirm('¿Eliminar?')">
+        <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-md-4">
+    <div class="card h-100">
+      <div class="card-header"><i class="bi bi-person me-2 text-primary"></i>Cliente</div>
+      <div class="card-body">
+        <div class="fw-semibold mb-2">{{ p.cliente_nombre }}</div>
+        <div class="text-muted mb-1"><i class="bi bi-telephone me-1"></i>{{ p.cliente_tel or '—' }}</div>
+        <div class="text-muted"><i class="bi bi-geo-alt me-1"></i>{{ p.cliente_dir or '—' }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100">
+      <div class="card-header"><i class="bi bi-speedometer2 me-2 text-success"></i>Moto</div>
+      <div class="card-body">
+        {% if p.marca %}
+          <div class="fw-semibold mb-1">{{ p.marca }} {{ p.modelo }}{% if p.anio %} ({{ p.anio }}){% endif %}</div>
+          <span class="badge bg-primary text-white font-monospace" style="letter-spacing:1px">{{ p.patente }}</span>
+          {% if p.tipo_moto %}<div class="text-muted mt-1" style="font-size:12px">{{ p.tipo_moto }}</div>{% endif %}
+          {% if p.cilindrada %}<div class="text-muted" style="font-size:12px">{{ p.cilindrada }}</div>{% endif %}
+        {% else %}
+          <span class="text-muted">Sin moto asignada</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100">
+      <div class="card-header"><i class="bi bi-calendar me-2 text-warning"></i>Info</div>
+      <div class="card-body">
+        <div class="mb-2"><span class="badge-estado badge-{{ p.estado }}" style="font-size:13px">{{ p.estado.upper() }}</span></div>
+        <table class="table table-sm table-borderless mb-0">
+          <tr><td class="text-muted ps-0">Fecha</td><td>{{ p.fecha }}</td></tr>
+          <tr><td class="text-muted ps-0">Válido hasta</td><td>{{ p.valido_hasta or '—' }}</td></tr>
+          {% if p.atendido_por %}<tr><td class="text-muted ps-0">Atendió</td><td>{{ p.atendido_por }}</td></tr>{% endif %}
+          {% if p.condicion_venta %}<tr><td class="text-muted ps-0">Condición</td><td>{{ p.condicion_venta }}</td></tr>{% endif %}
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% if p.descripcion %}
+<div class="card mb-3">
+  <div class="card-header">Referencia</div>
+  <div class="card-body"><p class="mb-0">{{ p.descripcion }}</p></div>
+</div>
+{% endif %}
+
+<div class="card">
+  <div class="card-header">Ítems del presupuesto</div>
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Tipo</th>
+          <th>Descripción</th>
+          <th class="text-center">En stock</th>
+          <th class="text-center">Cant.</th>
+          <th class="text-end">P. Unit.</th>
+          <th class="text-end">Subtotal</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for it in items %}
+        <tr>
+          <td>
+            {% if it.tipo == 'mano_de_obra' %}<span class="badge" style="background:#dbeafe;color:#1d4ed8">Mano de obra</span>
+            {% elif it.tipo == 'repuesto' %}<span class="badge" style="background:#dcfce7;color:#15803d">Repuesto</span>
+            {% else %}<span class="badge bg-secondary">Otro</span>{% endif %}
+          </td>
+          <td>{{ it.descripcion }}</td>
+          <td class="text-center">
+            {% if it.en_stock %}<i class="bi bi-check text-success"></i>{% else %}<i class="bi bi-x text-muted"></i>{% endif %}
+          </td>
+          <td class="text-center">{{ it.cantidad }}</td>
+          <td class="text-end">${{ '%.2f'|format(it.precio_unitario) }}</td>
+          <td class="text-end fw-semibold">${{ '%.2f'|format(it.cantidad * it.precio_unitario) }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="text-center text-muted py-3">Sin ítems.</td></tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr style="background:#f6f8fb">
+          <td colspan="5" class="text-end fw-bold">TOTAL</td>
+          <td class="text-end fw-bold h4 mb-0">${{ '%.2f'|format(total) }}</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</div>
+
+{% if p.observaciones %}
+<div class="card mt-3">
+  <div class="card-header">Observaciones</div>
+  <div class="card-body"><p class="mb-0">{{ p.observaciones }}</p></div>
+</div>
+{% endif %}
+{% endblock %}

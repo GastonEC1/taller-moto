@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %}{{ cliente.apellido }}, {{ cliente.nombre }}{% endblock %}
+{% block content %}
+<div class="page-header mb-3">
+  <div class="row align-items-center">
+    <div class="col-auto"><a href="/clientes" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i>Volver</a></div>
+    <div class="col"><h2 class="page-title mb-0">{{ cliente.apellido }}, {{ cliente.nombre }}</h2></div>
+    <div class="col-auto"><a href="/clientes/{{ cliente.id }}/editar" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil me-1"></i>Editar</a></div>
+  </div>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header">Datos de contacto</div>
+      <div class="card-body">
+        <div class="mb-1"><i class="bi bi-telephone me-1 text-muted"></i>{{ cliente.telefono or '—' }}</div>
+        <div class="mb-1"><i class="bi bi-geo-alt me-1 text-muted"></i>{{ cliente.direccion or '—' }}</div>
+        <div class="mb-1"><i class="bi bi-envelope me-1 text-muted"></i>{{ cliente.email or '—' }}</div>
+        <div><i class="bi bi-person-vcard me-1 text-muted"></i>DNI: {{ cliente.dni or '—' }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h3 class="mb-2" style="font-size:16px;font-weight:600">
+  <i class="bi bi-speedometer2 me-2"></i>Motos vinculadas
+</h3>
+<div class="row g-2 mb-4">
+  {% for v in motos %}
+  <div class="col-md-3 col-6">
+    <div class="card p-3">
+      <div class="fw-semibold">{{ v.marca }} {{ v.modelo }}</div>
+      {% if v.tipo_moto %}<div class="text-muted" style="font-size:11px">{{ v.tipo_moto }}</div>{% endif %}
+      <div class="text-muted font-monospace" style="font-size:12px">{{ v.patente }}</div>
+      {% if v.cilindrada %}<div class="text-muted" style="font-size:11px">{{ v.cilindrada }}</div>{% endif %}
+      {% if v.anio %}<div class="text-muted" style="font-size:11px">{{ v.anio }}</div>{% endif %}
+      <a href="/motos/{{ v.id }}/editar" class="btn btn-sm btn-outline-secondary mt-2"><i class="bi bi-pencil me-1"></i>Editar</a>
+    </div>
+  </div>
+  {% else %}
+  <div class="col"><p class="text-muted">Sin motos vinculadas.</p></div>
+  {% endfor %}
+</div>
+
+<h3 class="mb-2" style="font-size:16px;font-weight:600">
+  <i class="bi bi-clipboard2-check me-2"></i>Órdenes de trabajo
+</h3>
+<div class="card">
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr><th>#</th><th>Moto</th><th>Ingreso</th><th>Egreso</th><th>Estado</th><th></th></tr>
+      </thead>
+      <tbody>
+        {% for o in ordenes %}
+        <tr>
+          <td class="text-muted">#{{ o.id }}</td>
+          <td>{{ o.moto }}</td>
+          <td>{{ o.fecha_ingreso }}</td>
+          <td class="text-muted">{{ o.fecha_egreso or '—' }}</td>
+          <td><span class="badge-estado badge-{{ o.estado }}">{{ o.estado }}</span></td>
+          <td><a href="/ordenes/{{ o.id }}" class="btn btn-sm btn-outline-primary">Ver</a></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="text-center text-muted py-3">Sin órdenes.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

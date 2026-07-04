@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}Motos{% endblock %}
+{% block content %}
+<div class="page-header d-print-none mb-3">
+  <div class="row align-items-center">
+    <div class="col"><h2 class="page-title"><i class="bi bi-speedometer2 me-2"></i>Motos</h2></div>
+    <div class="col-auto"><a href="/motos/nueva" class="btn btn-success"><i class="bi bi-plus me-1"></i>Nueva moto</a></div>
+  </div>
+</div>
+<div class="card mb-3">
+  <div class="card-body py-2">
+    <form class="d-flex gap-2" method="get">
+      <div class="input-group">
+        <span class="input-group-text"><i class="bi bi-search"></i></span>
+        <input type="text" name="q" class="form-control" placeholder="Buscar por marca, modelo, dominio, tipo o cilindrada..." value="{{ q }}">
+      </div>
+      <button class="btn btn-outline-secondary">Buscar</button>
+      {% if q %}<a href="/motos" class="btn btn-outline-danger"><i class="bi bi-x"></i></a>{% endif %}
+    </form>
+  </div>
+</div>
+<div class="card">
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Dominio</th>
+          <th>Moto</th>
+          <th>Tipo</th>
+          <th>Cilindrada</th>
+          <th>Año</th>
+          <th>Color</th>
+          <th>Cliente</th>
+          <th class="text-end">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for v in motos %}
+        <tr>
+          <td><span class="fw-bold font-monospace" style="letter-spacing:1px">{{ v.patente }}</span></td>
+          <td class="fw-semibold">{{ v.marca }} {{ v.modelo }}</td>
+          <td class="text-muted">{{ v.tipo_moto or '—' }}</td>
+          <td class="text-muted">{{ v.cilindrada or '—' }}</td>
+          <td class="text-muted">{{ v.anio or '—' }}</td>
+          <td class="text-muted">{{ v.color or '—' }}</td>
+          <td>{{ v.cliente or '—' }}</td>
+          <td class="text-end">
+            <div class="d-flex gap-1 justify-content-end">
+              <a href="/motos/{{ v.id }}/editar" class="btn btn-sm btn-icon btn-outline-secondary" title="Editar"><i class="bi bi-pencil"></i></a>
+              <form method="post" action="/motos/{{ v.id }}/eliminar" class="d-inline" onsubmit="return confirm('¿Eliminar moto?')">
+                <button class="btn btn-sm btn-icon btn-outline-danger" title="Eliminar"><i class="bi bi-trash"></i></button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="8" class="text-center text-muted py-5">
+          <i class="bi bi-speedometer2" style="font-size:32px;display:block;margin-bottom:8px;opacity:.3"></i>
+          No se encontraron motos.
+        </td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

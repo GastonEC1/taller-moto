@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Editar' if cliente else 'Nuevo' }} Cliente{% endblock %}
+{% block content %}
+<div class="page-header mb-3">
+  <div class="row align-items-center">
+    <div class="col-auto"><a href="/clientes" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i>Volver</a></div>
+    <div class="col"><h2 class="page-title mb-0">{{ 'Editar' if cliente else 'Nuevo' }} Cliente</h2></div>
+  </div>
+</div>
+<div class="row justify-content-center">
+  <div class="col-12 col-md-6">
+    <div class="card">
+      <div class="card-header">Datos del cliente</div>
+      <div class="card-body">
+        <form method="post">
+          <div class="row g-3">
+            <div class="col-6">
+              <label class="form-label">Nombre *</label>
+              <input type="text" name="nombre" class="form-control" required value="{{ cliente.nombre if cliente else '' }}">
+            </div>
+            <div class="col-6">
+              <label class="form-label">Apellido *</label>
+              <input type="text" name="apellido" class="form-control" required value="{{ cliente.apellido if cliente else '' }}">
+            </div>
+            <div class="col-6">
+              <label class="form-label">DNI</label>
+              <input type="text" name="dni" class="form-control" value="{{ cliente.dni if cliente else '' }}">
+            </div>
+            <div class="col-6">
+              <label class="form-label">Teléfono</label>
+              <input type="text" name="telefono" class="form-control" value="{{ cliente.telefono if cliente else '' }}">
+            </div>
+            <div class="col-12">
+              <label class="form-label">Dirección</label>
+              <input type="text" name="direccion" class="form-control" value="{{ cliente.direccion if cliente else '' }}">
+            </div>
+            <div class="col-12">
+              <label class="form-label">E-mail</label>
+              <input type="email" name="email" class="form-control" value="{{ cliente.email if cliente else '' }}">
+            </div>
+          </div>
+          <div class="mt-4 d-flex gap-2">
+            <button type="submit" class="btn btn-primary">Guardar</button>
+            <a href="/clientes" class="btn btn-outline-secondary">Cancelar</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

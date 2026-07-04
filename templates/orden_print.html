@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Orden de Reparación #{{ orden.id }}</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:Arial,sans-serif;font-size:9.5px;color:#000;background:#fff}
+    .page{width:210mm;margin:0 auto;padding:7mm 9mm}
+
+    .header{display:grid;grid-template-columns:1fr 1fr;border:1px solid #000}
+    .h-left{padding:7px 9px;border-right:1px solid #000}
+    .h-right{padding:7px 9px}
+    .taller-name{font-size:13px;font-weight:bold;margin-bottom:3px}
+    .taller-sub{font-size:8.5px;line-height:1.6}
+    .doc-titulo{font-size:13px;font-weight:bold;margin-bottom:6px;text-align:right}
+    .doc-row{display:flex;justify-content:space-between;font-size:8.5px;margin-bottom:2px}
+    .doc-row .lbl{font-weight:bold}
+
+    .iva-bar{text-align:center;font-size:10px;font-weight:bold;
+             border:1px solid #000;border-top:none;padding:3px;letter-spacing:1px}
+
+    .data-table{width:100%;border-collapse:collapse;border:1px solid #000;border-top:none}
+    .data-table td{border:1px solid #aaa;padding:2px 5px;font-size:8.5px;vertical-align:middle;height:16px}
+    .data-table td.lbl{font-weight:bold;background:#f0f0f0;white-space:nowrap;width:1%;padding-right:6px}
+    .data-table td.val{min-width:80px}
+    .data-table td.lbl-r{font-weight:bold;background:#f0f0f0;white-space:nowrap;text-align:right;padding-right:6px}
+
+    .section{border:1px solid #000;border-top:none}
+    .sec-title{font-weight:bold;font-size:9px;padding:3px 7px;
+               background:#e0e0e0;border-bottom:1px solid #aaa}
+    .sec-body{padding:6px 7px;min-height:55px;font-size:9.5px;
+              line-height:1.6;white-space:pre-wrap}
+
+    .items-wrap{border:1px solid #000;border-top:none}
+    .items-table{width:100%;border-collapse:collapse}
+    .items-table th{background:#1a1a1a;color:#fff;font-size:8.5px;
+                    padding:4px 6px;text-align:left;border:1px solid #555}
+    .items-table th.r{text-align:right}
+    .items-table td{font-size:9px;padding:4px 6px;border:1px solid #ddd;height:18px}
+    .items-table td.r{text-align:right}
+
+    .firmas{display:grid;grid-template-columns:1fr 1fr 1fr;
+            gap:10px;margin-top:14px;padding-top:8px;border-top:1px solid #000}
+    .firma-blk{text-align:center}
+    .f-line{border-top:1px solid #000;padding-top:3px;margin:0 8px;font-size:8.5px}
+    .f-sub{font-size:7.5px;color:#555;margin-top:2px}
+
+    .no-print{text-align:center;padding:10px}
+    .no-print button{background:#111;color:#fff;border:none;padding:8px 22px;
+                     border-radius:4px;cursor:pointer;font-size:13px}
+    @media print{.no-print{display:none}.page{padding:5mm 7mm}}
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="no-print"><button onclick="window.print()">🖨️ Imprimir</button></div>
+
+  <!-- ENCABEZADO -->
+  <div class="header">
+    <div class="h-left">
+      <div class="taller-name">{{ taller.nombre }}</div>
+      <div class="taller-sub">
+        {{ taller.direccion }}<br>
+        {{ taller.ciudad }}<br>
+        Tel: {{ taller.telefono }}
+      </div>
+    </div>
+    <div class="h-right">
+      <div class="doc-titulo">ORDEN DE TRABAJO – TALLER DE MOTOS</div>
+      <div class="doc-row"><span class="lbl">Nro.:</span><span>#{{ orden.id }}</span></div>
+      <div class="doc-row"><span class="lbl">Fecha ingreso:</span><span>{{ orden.fecha_ingreso }}</span></div>
+      {% if orden.fecha_estimada %}<div class="doc-row"><span class="lbl">Fecha estimada:</span><span>{{ orden.fecha_estimada }}</span></div>{% endif %}
+      {% if orden.fecha_egreso %}<div class="doc-row"><span class="lbl">Fecha egreso:</span><span>{{ orden.fecha_egreso }}</span></div>{% endif %}
+      <div class="doc-row"><span class="lbl">Estado:</span><span><strong>{{ orden.estado.upper() }}</strong></span></div>
+    </div>
+  </div>
+
+  <!-- DATOS CLIENTE / MOTO -->
+  <table class="data-table">
+    <tr>
+      <td class="lbl">Cliente:</td>
+      <td class="val" colspan="2"><strong>{{ orden.cliente_apellido }}, {{ orden.cliente_nombre2 }}</strong></td>
+      <td class="lbl">Teléfono:</td>
+      <td class="val" colspan="3">{{ orden.cliente_tel or '—' }}</td>
+    </tr>
+    <tr>
+      <td class="lbl">Domicilio:</td>
+      <td class="val" colspan="2">{{ orden.cliente_dir or '—' }}</td>
+      <td class="lbl">D.N.I.:</td>
+      <td class="val" colspan="3">{{ orden.cliente_dni or '—' }}</td>
+    </tr>
+    {% if orden.cliente_email %}
+    <tr>
+      <td class="lbl">E-mail:</td>
+      <td class="val" colspan="6">{{ orden.cliente_email }}</td>
+    </tr>
+    {% endif %}
+    <tr>
+      <td class="lbl">Moto:</td>
+      <td class="val" colspan="2"><strong>{{ orden.marca }} {{ orden.modelo }}{% if orden.anio %} {{ orden.anio }}{% endif %}</strong></td>
+      <td class="lbl">Dominio:</td>
+      <td class="val" colspan="3"><strong style="font-family:monospace;letter-spacing:2px">{{ orden.patente }}</strong></td>
+    </tr>
+    <tr>
+      <td class="lbl">Tipo:</td>
+      <td class="val">{{ orden.tipo_moto or '—' }}</td>
+      <td class="lbl">Cilindrada:</td>
+      <td class="val">{{ orden.cilindrada or '—' }}</td>
+      <td class="lbl">Color:</td>
+      <td class="val" colspan="2">{{ orden.color or '—' }}</td>
+    </tr>
+    <tr>
+      <td class="lbl">Motor:</td>
+      <td class="val" colspan="2">{{ orden.motor or '—' }}</td>
+      <td class="lbl">Combustible:</td>
+      <td class="val">{{ orden.combustible or '—' }}</td>
+      <td class="lbl">Km:</td>
+      <td class="val">{{ '{:,}'.format(orden.kilometros).replace(',','.')|string if orden.kilometros else '—' }}</td>
+    </tr>
+    {% if orden.receptor_servicio or orden.observaciones %}
+    <tr>
+      {% if orden.receptor_servicio %}
+      <td class="lbl">Receptor:</td>
+      <td class="val" colspan="2">{{ orden.receptor_servicio }}</td>
+      {% else %}<td colspan="3"></td>{% endif %}
+      {% if orden.observaciones %}
+      <td class="lbl">Obs.:</td>
+      <td class="val" colspan="3">{{ orden.observaciones }}</td>
+      {% else %}<td colspan="4"></td>{% endif %}
+    </tr>
+    {% endif %}
+  </table>
+
+  <!-- DIAGNÓSTICO -->
+  <div class="section" style="margin-top:5px">
+    <div class="sec-title">Diagnóstico / Manifestación del cliente</div>
+    <div class="sec-body">{{ orden.diagnostico or '' }}</div>
+  </div>
+
+  <!-- TRABAJOS -->
+  <div class="section">
+    <div class="sec-title">Trabajo realizado / por realizar</div>
+    <div class="sec-body">{{ orden.descripcion_trabajo or '' }}</div>
+  </div>
+
+  <!-- REPUESTOS -->
+  {% if repuestos %}
+  <div class="items-wrap">
+    <table class="items-table">
+      <thead>
+        <tr>
+          <th>Repuesto / Material</th>
+          <th class="r" style="width:90px">Cantidad</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in repuestos %}
+        <tr><td>{{ r.descripcion }}</td><td class="r">{{ r.cantidad }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+  <!-- FIRMAS -->
+  <div class="firmas">
+    <div class="firma-blk">
+      <div class="f-line">Firma del Cliente</div>
+      <div class="f-sub">Aclaración</div>
+    </div>
+    <div class="firma-blk">
+      <div class="f-line">Firma del Mecánico</div>
+      <div class="f-sub">Aclaración</div>
+    </div>
+    <div class="firma-blk">
+      <div class="f-line">Firma Responsable</div>
+      <div class="f-sub">Aclaración</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

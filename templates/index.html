@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% block title %}Inicio – Taller de Motos{% endblock %}
+{% block content %}
+
+<div class="page-header d-flex justify-content-between align-items-center">
+  <h2 class="page-title">
+    <span class="page-title-icon"><i class="bi bi-grid"></i></span>
+    Panel Principal
+  </h2>
+</div>
+
+<!-- STATS -->
+<div class="row g-3 mb-3">
+  <div class="col-6 col-md-3">
+    <div class="card" style="padding:18px 20px">
+      <div class="d-flex align-items-center gap-3">
+        <div class="stat-icon si-blue"><i class="bi bi-people"></i></div>
+        <div>
+          <div class="stat-label">Clientes</div>
+          <div class="stat-value" style="color:#1d4ed8">{{ stats.clientes }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card" style="padding:18px 20px">
+      <div class="d-flex align-items-center gap-3">
+        <div class="stat-icon si-green">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M4 4.5a.5.5 0 0 1 .5-.5H6a.5.5 0 0 1 0 1v.5h4.14l.386-1.158A.5.5 0 0 1 11 4h1a.5.5 0 0 1 0 1h-.64l-.311.935.807 1.29a3.5 3.5 0 1 1-.848.53l-.508-.812-2.076 3.322A.5.5 0 0 1 8 10.5H5.959a3.5 3.5 0 1 1-1.815-3.274L5 5.856V5h-.5a.5.5 0 0 1-.5-.5zm1.5 2.443-.508.814c.17.11.33.236.478.374L5.862 7.9a3.5 3.5 0 0 0-.362-.957zM8 9.967l1.5-2.4-.75-1.2H6.5L5.693 7.75A3.5 3.5 0 0 1 7.1 9.5h.554zM4.5 12a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zm7 0a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="stat-label">Motos</div>
+          <div class="stat-value" style="color:#15803d">{{ stats.motos }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card" style="padding:18px 20px">
+      <div class="d-flex align-items-center gap-3">
+        <div class="stat-icon si-orange"><i class="bi bi-clipboard2-check"></i></div>
+        <div>
+          <div class="stat-label">Órdenes abiertas</div>
+          <div class="stat-value" style="color:#c2410c">{{ stats.ordenes_abiertas }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card" style="padding:18px 20px">
+      <div class="d-flex align-items-center gap-3">
+        <div class="stat-icon si-red"><i class="bi bi-check2-circle"></i></div>
+        <div>
+          <div class="stat-label">Órdenes cerradas</div>
+          <div class="stat-value" style="color:#b91c1c">{{ stats.ordenes_cerradas }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- QUICK ACTIONS -->
+<div class="row g-3 mb-3">
+  <div class="col-6 col-md-3">
+    <a href="/clientes/nuevo" class="qa-card">
+      <div class="qa-icon qi-blue"><i class="bi bi-person-plus"></i></div>
+      <div><div class="qa-title">Nuevo Cliente</div><div class="qa-sub">Registrar cliente</div></div>
+    </a>
+  </div>
+  <div class="col-6 col-md-3">
+    <a href="/motos/nueva" class="qa-card">
+      <div class="qa-icon qi-green">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M4 4.5a.5.5 0 0 1 .5-.5H6a.5.5 0 0 1 0 1v.5h4.14l.386-1.158A.5.5 0 0 1 11 4h1a.5.5 0 0 1 0 1h-.64l-.311.935.807 1.29a3.5 3.5 0 1 1-.848.53l-.508-.812-2.076 3.322A.5.5 0 0 1 8 10.5H5.959a3.5 3.5 0 1 1-1.815-3.274L5 5.856V5h-.5a.5.5 0 0 1-.5-.5zm1.5 2.443-.508.814c.17.11.33.236.478.374L5.862 7.9a3.5 3.5 0 0 0-.362-.957zM8 9.967l1.5-2.4-.75-1.2H6.5L5.693 7.75A3.5 3.5 0 0 1 7.1 9.5h.554zM4.5 12a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zm7 0a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
+        </svg>
+      </div>
+      <div><div class="qa-title">Nueva Moto</div><div class="qa-sub">Registrar moto</div></div>
+    </a>
+  </div>
+  <div class="col-6 col-md-3">
+    <a href="/ordenes/nueva" class="qa-card">
+      <div class="qa-icon qi-orange"><i class="bi bi-clipboard2-plus"></i></div>
+      <div><div class="qa-title">Nueva Orden</div><div class="qa-sub">Abrir orden de trabajo</div></div>
+    </a>
+  </div>
+  <div class="col-6 col-md-3">
+    <a href="/presupuestos/nuevo" class="qa-card">
+      <div class="qa-icon qi-teal"><i class="bi bi-receipt"></i></div>
+      <div><div class="qa-title">Nuevo Presupuesto</div><div class="qa-sub">Crear presupuesto</div></div>
+    </a>
+  </div>
+</div>
+
+<!-- ÚLTIMAS ÓRDENES -->
+<div class="card">
+  <div class="card-header"><i class="bi bi-clock-history text-warning"></i> Últimas órdenes</div>
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr><th>#</th><th>Cliente</th><th>Moto</th><th>Ingreso</th><th>Estado</th><th></th></tr>
+      </thead>
+      <tbody>
+        {% for o in ordenes_recientes %}
+        <tr>
+          <td class="text-muted">#{{ o.id }}</td>
+          <td class="fw-semibold">{{ o.cliente }}</td>
+          <td>{{ o.moto }}</td>
+          <td>{{ o.fecha_ingreso }}</td>
+          <td><span class="badge-estado badge-{{ o.estado }}">{{ o.estado }}</span></td>
+          <td class="text-end"><a href="/ordenes/{{ o.id }}" class="btn btn-sm btn-outline-secondary">Ver</a></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="text-center text-muted py-4">
+          <i class="bi bi-inbox d-block mb-1" style="font-size:24px;opacity:.4"></i>Sin órdenes aún.
+        </td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

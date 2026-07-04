@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Editar' if presupuesto else 'Nuevo' }} Presupuesto{% endblock %}
+{% block content %}
+<h2 class="mb-3"><i class="bi bi-receipt"></i> {{ 'Editar' if presupuesto else 'Nuevo' }} Presupuesto</h2>
+<div class="card p-4">
+  <form method="post" id="form-presupuesto">
+    <div class="row g-3 mb-4">
+      <div class="col-md-5">
+        <label class="form-label">Cliente *</label>
+        <select name="cliente_id" class="form-select" required id="sel-cliente">
+          <option value="">— Seleccionar —</option>
+          {% for c in clientes %}
+          <option value="{{ c.id }}" {{ 'selected' if presupuesto and presupuesto.cliente_id == c.id }}>{{ c.nombre }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-5">
+        <label class="form-label">Moto</label>
+        <select name="vehiculo_id" class="form-select" id="sel-moto">
+          <option value="">— Opcional —</option>
+          {% for v in motos %}
+          <option value="{{ v.id }}" data-cliente="{{ v.cliente_id }}"
+            {{ 'selected' if presupuesto and presupuesto.vehiculo_id == v.id }}>{{ v.descripcion }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Fecha *</label>
+        <input type="date" name="fecha" class="form-control" required
+               value="{{ presupuesto.fecha if presupuesto else '' }}">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Válido hasta</label>
+        <input type="date" name="valido_hasta" class="form-control"
+               value="{{ presupuesto.valido_hasta if presupuesto else '' }}">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Atendido por</label>
+        <input type="text" name="atendido_por" class="form-control" placeholder="Nombre"
+               value="{{ presupuesto.atendido_por if presupuesto else '' }}">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Condición de venta</label>
+        <input type="text" name="condicion_venta" class="form-control" placeholder="Ej: CTDO."
+               value="{{ presupuesto.condicion_venta if presupuesto else '' }}">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Estado</label>
+        <select name="estado" class="form-select">
+          <option value="pendiente"  {{ 'selected' if not presupuesto or presupuesto.estado=='pendiente' }}>Pendiente</option>
+          <option value="aprobado"   {{ 'selected' if presupuesto and presupuesto.estado=='aprobado' }}>Aprobado</option>
+          <option value="rechazado"  {{ 'selected' if presupuesto and presupuesto.estado=='rechazado' }}>Rechazado</option>
+        </select>
+      </div>
+      <div class="col-12">
+        <label class="form-label">Referencia / Descripción</label>
+        <textarea name="descripcion" class="form-control" rows="2"
+                  placeholder="Ej: Presupuesto reparación Honda CB 190...">{{ presupuesto.descripcion if presupuesto else '' }}</textarea>
+      </div>
+      <div class="col-12">
+        <label class="form-label">Observaciones</label>
+        <textarea name="observaciones" class="form-control" rows="2"
+                  placeholder="Ej: A Crédito - Inmediato...">{{ presupuesto.observaciones if presupuesto else '' }}</textarea>
+      </div>
+    </div>
+
+    <!-- Ítems -->
+    <h5 class="mb-3 mt-2" style="font-size:15px;font-weight:600">Ítems del presupuesto</h5>
+    <div id="items-body" class="mb-2">
+      {% if items %}
+        {% for it in items %}
+        <div class="item-card card mb-2">
+          <div class="card-body p-2">
+            <div class="row g-2 align-items-center">
+              <div class="col-8 col-md-4">
+                <select name="item_tipo" class="form-select form-select-sm">
+                  <option value="mano_de_obra" {{ 'selected' if it.tipo=='mano_de_obra' }}>Mano de obra</option>
+                  <option value="repuesto"     {{ 'selected' if it.tipo=='repuesto' }}>Repuesto</option>
+                  <option value="otro"         {{ 'selected' if it.tipo=='otro' }}>Otro</option>
+                </select>
+              </div>
+              <div class="col-auto d-flex align-items-center gap-1">
+                <input type="checkbox" name="item_stock" value="1" class="form-check-input mt-0" {{ 'checked' if it.en_stock }} id="stock_{{ loop.index }}">
+                <label class="form-check-label small" for="stock_{{ loop.index }}">Stock</label>
+              </div>
+              <div class="col-auto ms-auto">
+                <button type="button" class="btn btn-sm btn-outline-danger btn-eliminar-item"><i class="bi bi-trash"></i></button>
+              </div>
+            </div>
+            <div class="row g-2 mt-1">
+              <div class="col-12">
+                <input type="text" name="item_desc" class="form-control form-control-sm" placeholder="Descripción" value="{{ it.descripcion }}" required>
+              </div>
+            </div>
+            <div class="row g-2 mt-1 align-items-center">
+              <div class="col-4">
+                <label class="form-label form-label-sm mb-1" style="font-size:11px;color:#6b7280">Cantidad</label>
+                <input type="number" name="item_cantidad" class="form-control form-control-sm item-cant" value="{{ it.cantidad }}" min="0.01" step="any">
+              </div>
+              <div class="col-4">
+                <label class="form-label form-label-sm mb-1" style="font-size:11px;color:#6b7280">Precio unit.</label>
+                <input type="number" name="item_precio" class="form-control form-control-sm item-precio" value="{{ it.precio_unitario }}" min="0" step="any">
+              </div>
+              <div class="col-4 text-end">
+                <div style="font-size:11px;color:#6b7280;margin-bottom:2px">Subtotal</div>
+                <div class="item-subtotal fw-bold" style="font-size:15px">${{ '%.2f'|format(it.cantidad * it.precio_unitario) }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+    <div class="d-flex justify-content-between align-items-center p-2 mb-3" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px">
+      <span class="fw-bold">TOTAL:</span>
+      <span class="fw-bold fs-5" id="total-general">$0.00</span>
+    </div>
+    <div class="d-flex gap-2 mb-4">
+      <button type="button" class="btn btn-outline-primary btn-sm" id="btn-add-mano">
+        <i class="bi bi-plus"></i> Mano de obra
+      </button>
+      <button type="button" class="btn btn-outline-success btn-sm" id="btn-add-repuesto">
+        <i class="bi bi-plus"></i> Repuesto
+      </button>
+    </div>
+
+    <div class="d-flex gap-2">
+      <button type="submit" class="btn btn-info text-white">Guardar</button>
+      <a href="/presupuestos" class="btn btn-outline-secondary">Cancelar</a>
+    </div>
+  </form>
+</div>
+
+<template id="tpl-row">
+  <div class="item-card card mb-2">
+    <div class="card-body p-2">
+      <div class="row g-2 align-items-center">
+        <div class="col-8 col-md-4">
+          <select name="item_tipo" class="form-select form-select-sm">
+            <option value="mano_de_obra">Mano de obra</option>
+            <option value="repuesto">Repuesto</option>
+            <option value="otro">Otro</option>
+          </select>
+        </div>
+        <div class="col-auto d-flex align-items-center gap-1">
+          <input type="checkbox" name="item_stock" value="1" class="form-check-input mt-0">
+          <label class="form-check-label small">Stock</label>
+        </div>
+        <div class="col-auto ms-auto">
+          <button type="button" class="btn btn-sm btn-outline-danger btn-eliminar-item"><i class="bi bi-trash"></i></button>
+        </div>
+      </div>
+      <div class="row g-2 mt-1">
+        <div class="col-12">
+          <input type="text" name="item_desc" class="form-control form-control-sm" placeholder="Descripción" required>
+        </div>
+      </div>
+      <div class="row g-2 mt-1 align-items-center">
+        <div class="col-4">
+          <label class="form-label form-label-sm mb-1" style="font-size:11px;color:#6b7280">Cantidad</label>
+          <input type="number" name="item_cantidad" class="form-control form-control-sm item-cant" value="1" min="0.01" step="any">
+        </div>
+        <div class="col-4">
+          <label class="form-label form-label-sm mb-1" style="font-size:11px;color:#6b7280">Precio unit.</label>
+          <input type="number" name="item_precio" class="form-control form-control-sm item-precio" value="0" min="0" step="any">
+        </div>
+        <div class="col-4 text-end">
+          <div style="font-size:11px;color:#6b7280;margin-bottom:2px">Subtotal</div>
+          <div class="item-subtotal fw-bold" style="font-size:15px">$0.00</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function calcTotal() {
+  let total = 0;
+  document.querySelectorAll('#items-body .item-card').forEach(card => {
+    const cant = parseFloat(card.querySelector('.item-cant')?.value) || 0;
+    const precio = parseFloat(card.querySelector('.item-precio')?.value) || 0;
+    const sub = cant * precio;
+    total += sub;
+    card.querySelector('.item-subtotal').textContent = '$' + sub.toFixed(2);
+  });
+  document.getElementById('total-general').textContent = '$' + total.toFixed(2);
+}
+function bindCard(card) {
+  card.querySelector('.item-cant').addEventListener('input', calcTotal);
+  card.querySelector('.item-precio').addEventListener('input', calcTotal);
+  card.querySelector('.btn-eliminar-item').addEventListener('click', () => { card.remove(); calcTotal(); });
+}
+function addRow(tipo) {
+  const tpl = document.getElementById('tpl-row');
+  const clone = tpl.content.cloneNode(true);
+  const card = clone.querySelector('.item-card');
+  card.querySelector('select[name="item_tipo"]').value = tipo;
+  if (tipo === 'mano_de_obra') card.querySelector('input[name="item_desc"]').value = 'Mano de obra';
+  bindCard(card);
+  document.getElementById('items-body').appendChild(card);
+}
+document.getElementById('btn-add-mano').addEventListener('click', () => addRow('mano_de_obra'));
+document.getElementById('btn-add-repuesto').addEventListener('click', () => addRow('repuesto'));
+document.querySelectorAll('#items-body .item-card').forEach(bindCard);
+if (document.querySelectorAll('#items-body .item-card').length === 0) addRow('mano_de_obra');
+document.getElementById('sel-moto').addEventListener('change', function() {
+  const cid = this.options[this.selectedIndex].dataset.cliente;
+  if (cid) document.getElementById('sel-cliente').value = cid;
+});
+calcTotal();
+</script>
+{% endblock %}

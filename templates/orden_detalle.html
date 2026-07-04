@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% block title %}Orden #{{ orden.id }}{% endblock %}
+{% block content %}
+<div class="page-header mb-3">
+  <div class="row align-items-center flex-wrap gap-2">
+    <div class="col-auto"><a href="/ordenes" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i>Volver</a></div>
+    <div class="col">
+      <h2 class="page-title mb-0">Orden de Trabajo <span class="text-muted fw-normal">#{{ orden.id }}</span></h2>
+    </div>
+    <div class="col-auto d-flex gap-2 flex-wrap">
+      <a href="/ordenes/{{ orden.id }}/imprimir" target="_blank" class="btn btn-sm btn-outline-secondary"><i class="bi bi-printer me-1"></i>Imprimir</a>
+      <a href="/ordenes/{{ orden.id }}/editar" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil me-1"></i>Editar</a>
+      {% if orden.estado == 'abierta' %}
+      <form method="post" action="/ordenes/{{ orden.id }}/cerrar" class="d-inline">
+        <button class="btn btn-sm btn-success"><i class="bi bi-check me-1"></i>Cerrar orden</button>
+      </form>
+      {% endif %}
+      <form method="post" action="/ordenes/{{ orden.id }}/eliminar" class="d-inline" onsubmit="return confirm('¿Eliminar orden?')">
+        <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-md-4">
+    <div class="card h-100">
+      <div class="card-header"><i class="bi bi-person me-2 text-primary"></i>Cliente</div>
+      <div class="card-body">
+        <div class="fw-semibold mb-2">{{ orden.cliente_nombre }}</div>
+        <div class="text-muted mb-1"><i class="bi bi-telephone me-1"></i>{{ orden.cliente_tel or '—' }}</div>
+        <div class="text-muted mb-1"><i class="bi bi-geo-alt me-1"></i>{{ orden.cliente_dir or '—' }}</div>
+        {% if orden.cliente_email %}<div class="text-muted"><i class="bi bi-envelope me-1"></i>{{ orden.cliente_email }}</div>{% endif %}
+        {% if orden.cliente_dni %}<div class="text-muted mt-1"><i class="bi bi-person-vcard me-1"></i>DNI: {{ orden.cliente_dni }}</div>{% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100">
+      <div class="card-header"><i class="bi bi-speedometer2 me-2 text-success"></i>Moto</div>
+      <div class="card-body">
+        <div class="fw-semibold mb-1">{{ orden.marca }} {{ orden.modelo }}{% if orden.anio %} ({{ orden.anio }}){% endif %}</div>
+        <div class="mb-1"><span class="badge bg-primary text-white font-monospace" style="letter-spacing:1px;font-size:13px">{{ orden.patente }}</span></div>
+        {% if orden.tipo_moto %}<div class="text-muted mb-1"><i class="bi bi-tag me-1"></i>{{ orden.tipo_moto }}</div>{% endif %}
+        {% if orden.cilindrada %}<div class="text-muted mb-1"><i class="bi bi-speedometer me-1"></i>{{ orden.cilindrada }}</div>{% endif %}
+        {% if orden.motor %}<div class="text-muted mb-1">Motor: {{ orden.motor }}</div>{% endif %}
+        {% if orden.color %}<div class="text-muted mb-1">Color: {{ orden.color }}</div>{% endif %}
+        {% if orden.combustible %}<div class="text-muted mb-1">Combustible: {{ orden.combustible }}</div>{% endif %}
+        {% if orden.kilometros %}<div class="text-muted"><i class="bi bi-speedometer2 me-1"></i>{{ '{:,}'.format(orden.kilometros).replace(',','.') }} km</div>{% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100">
+      <div class="card-header"><i class="bi bi-calendar me-2 text-warning"></i>Fechas y estado</div>
+      <div class="card-body">
+        <div class="mb-2"><span class="badge-estado badge-{{ orden.estado }}" style="font-size:13px">{{ orden.estado.upper() }}</span></div>
+        <table class="table table-sm table-borderless mb-0">
+          <tr><td class="text-muted ps-0">Ingreso</td><td class="fw-semibold">{{ orden.fecha_ingreso }}</td></tr>
+          <tr><td class="text-muted ps-0">Estimada</td><td>{{ orden.fecha_estimada or '—' }}</td></tr>
+          <tr><td class="text-muted ps-0">Egreso</td><td>{{ orden.fecha_egreso or '—' }}</td></tr>
+          {% if orden.receptor_servicio %}<tr><td class="text-muted ps-0">Receptor</td><td>{{ orden.receptor_servicio }}</td></tr>{% endif %}
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header"><i class="bi bi-chat-text me-2 text-purple"></i>Diagnóstico</div>
+      <div class="card-body"><p class="mb-0" style="white-space:pre-wrap">{{ orden.diagnostico or 'Sin diagnóstico registrado.' }}</p></div>
+    </div>
+  </div>
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header"><i class="bi bi-tools me-2 text-warning"></i>Trabajo realizado</div>
+      <div class="card-body"><p class="mb-0" style="white-space:pre-wrap">{{ orden.descripcion_trabajo or '—' }}</p></div>
+    </div>
+  </div>
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header"><i class="bi bi-box-seam me-2 text-info"></i>Repuestos colocados</div>
+      {% if repuestos %}
+      <div class="table-responsive">
+        <table class="table mb-0">
+          <thead><tr><th>Descripción</th><th style="width:120px">Cantidad</th></tr></thead>
+          <tbody>
+            {% for r in repuestos %}
+            <tr><td>{{ r.descripcion }}</td><td>{{ r.cantidad }}</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="card-body"><p class="mb-0 text-muted">Sin repuestos registrados.</p></div>
+      {% endif %}
+    </div>
+  </div>
+  {% if orden.observaciones %}
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header"><i class="bi bi-sticky me-2"></i>Observaciones</div>
+      <div class="card-body"><p class="mb-0">{{ orden.observaciones }}</p></div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

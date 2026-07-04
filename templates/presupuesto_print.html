@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Presupuesto #{{ p.id }}</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:Arial,sans-serif;font-size:10px;color:#000;background:#fff}
+    .page{width:210mm;margin:0 auto;padding:8mm 10mm}
+
+    .header{display:grid;grid-template-columns:1fr 80px 1fr;border:1px solid #000;margin-bottom:0}
+    .h-left{padding:6px 8px;border-right:1px solid #000}
+    .h-mid{display:flex;flex-direction:column;align-items:center;justify-content:center;
+           border-right:1px solid #000;padding:4px;text-align:center}
+    .h-right{padding:6px 8px}
+    .taller-name{font-size:13px;font-weight:bold;margin-bottom:2px}
+    .taller-sub{font-size:9px;line-height:1.5}
+    .x-box{font-size:28px;font-weight:bold;border:1px solid #000;
+           width:40px;height:40px;display:flex;align-items:center;justify-content:center;margin-bottom:3px}
+    .doc-title{font-size:11px;font-weight:bold;text-align:right;margin-bottom:3px}
+    .doc-row{display:flex;justify-content:space-between;font-size:9px;margin-bottom:1px}
+    .doc-row span:first-child{font-weight:bold}
+
+    .data-grid{border:1px solid #000;border-top:none;display:grid;grid-template-columns:1fr 1fr}
+    .data-col{border-right:1px solid #000}
+    .data-col:last-child{border-right:none}
+    .data-row{display:grid;grid-template-columns:90px 1fr;border-bottom:1px solid #ccc;min-height:16px}
+    .data-row:last-child{border-bottom:none}
+    .dr-label{font-weight:bold;font-size:8.5px;padding:2px 4px;background:#f5f5f5;
+              border-right:1px solid #ccc;display:flex;align-items:center}
+    .dr-value{font-size:9px;padding:2px 4px;display:flex;align-items:center}
+
+    .items-section{border:1px solid #000;border-top:none}
+    .items-table{width:100%;border-collapse:collapse}
+    .items-table th{background:#111;color:#fff;font-size:9px;padding:4px 6px;
+                    text-align:left;border:1px solid #444}
+    .items-table th.num{text-align:right}
+    .items-table td{font-size:10px;padding:4px 6px;border:1px solid #ddd;min-height:18px}
+    .items-table td.num{text-align:right}
+    .items-table td.center{text-align:center}
+    .items-table tr:nth-child(even) td{background:#fafafa}
+    .total-row td{background:#111;color:#fff;font-weight:bold;font-size:11px;border-color:#444}
+
+    .bottom-section{border:1px solid #000;border-top:none;padding:6px 8px}
+    .obs-row{display:grid;grid-template-columns:80px 1fr;margin-bottom:3px;font-size:9px}
+    .obs-label{font-weight:bold}
+
+    .firma-section{margin-top:20px;padding-top:10px;border-top:1px solid #000;text-align:center}
+    .firma-line{border-top:1px solid #000;padding-top:3px;margin:0 auto;width:220px;font-size:9px}
+
+    .no-print{text-align:center;padding:10px}
+    .no-print button{background:#111;color:#fff;border:none;padding:8px 22px;border-radius:4px;cursor:pointer;font-size:13px}
+    @media print{.no-print{display:none}.page{padding:5mm 8mm}}
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="no-print"><button onclick="window.print()">🖨️ Imprimir</button></div>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="h-left">
+      <div class="taller-name">{{ taller.nombre }}</div>
+      <div class="taller-sub">
+        {{ taller.direccion }}<br>
+        {{ taller.ciudad }}<br>
+        {{ taller.telefono }}
+      </div>
+    </div>
+    <div class="h-mid">
+      <div class="x-box">X</div>
+      <div style="font-size:8px;text-align:center">No válido<br>como factura</div>
+    </div>
+    <div class="h-right">
+      <div class="doc-title">Presupuesto – Taller de Motos</div>
+      <div class="doc-row"><span>N°:</span><span>0001-{{ '%08d'|format(p.id) }}</span></div>
+      <div class="doc-row"><span>Fecha:</span><span>{{ p.fecha }}</span></div>
+      <div class="doc-row"><span>CUIT:</span><span>{{ taller.cuit }}</span></div>
+    </div>
+  </div>
+
+  <!-- GRILLA CLIENTE / MOTO -->
+  <div class="data-grid">
+    <div class="data-col">
+      <div class="data-row"><span class="dr-label">Apellido:</span><span class="dr-value">{{ p.cliente_nombre.split(' ')[-1] if p.cliente_nombre else '' }}</span></div>
+      <div class="data-row"><span class="dr-label">Nombre:</span><span class="dr-value">{{ p.cliente_nombre.split(' ')[0] if p.cliente_nombre else '' }}</span></div>
+      <div class="data-row"><span class="dr-label">Domicilio:</span><span class="dr-value">{{ p.cliente_dir or '' }}</span></div>
+      <div class="data-row"><span class="dr-label">Teléfono:</span><span class="dr-value">{{ p.cliente_tel or '' }}</span></div>
+    </div>
+    <div class="data-col">
+      <div class="data-row"><span class="dr-label">Dominio:</span><span class="dr-value"><strong>{{ p.patente or '' }}</strong></span></div>
+      <div class="data-row"><span class="dr-label">Moto:</span><span class="dr-value">{{ (p.marca or '') + ' ' + (p.modelo or '') }}</span></div>
+      <div class="data-row"><span class="dr-label">Tipo:</span><span class="dr-value">{{ p.tipo_moto or '' }}</span></div>
+      <div class="data-row"><span class="dr-label">Cilindrada:</span><span class="dr-value">{{ p.cilindrada or '' }}</span></div>
+      <div class="data-row"><span class="dr-label">Año:</span><span class="dr-value">{{ p.anio or '' }}</span></div>
+      <div class="data-row"><span class="dr-label">Recepcionó:</span><span class="dr-value">{{ p.atendido_por or '' }}</span></div>
+    </div>
+  </div>
+
+  <!-- TABLA ÍTEMS -->
+  <div class="items-section">
+    <table class="items-table">
+      <thead>
+        <tr>
+          <th>Descripción</th>
+          <th class="num" style="width:55px">En stock</th>
+          <th class="num" style="width:60px">Cantidad</th>
+          <th class="num" style="width:110px">Importe unitario</th>
+          <th class="num" style="width:110px">Importe total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for it in items %}
+        <tr>
+          <td>{{ it.descripcion }}</td>
+          <td class="center">{{ 'Sí' if it.en_stock else 'No' }}</td>
+          <td class="num">{{ '{:.2f}'.format(it.cantidad) }}</td>
+          <td class="num">${{ '{:,.2f}'.format(it.precio_unitario).replace(',','.') }}</td>
+          <td class="num">${{ '{:,.2f}'.format(it.cantidad * it.precio_unitario).replace(',','.') }}</td>
+        </tr>
+        {% endfor %}
+        {% for _ in range([5 - items|length, 1]|max) %}
+        <tr><td>&nbsp;</td><td></td><td></td><td></td><td></td></tr>
+        {% endfor %}
+        <tr class="total-row">
+          <td colspan="4" style="text-align:right">Total IVA incluido $</td>
+          <td class="num">${{ '{:,.2f}'.format(total).replace(',','.') }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- OBSERVACIONES -->
+  <div class="bottom-section">
+    <div class="obs-row">
+      <span class="obs-label">Observaciones:</span>
+      <span>{{ p.observaciones or '' }}</span>
+    </div>
+    <div style="text-align:right;font-size:9px;color:#555;margin-top:4px">
+      Los precios pueden sufrir modificaciones. El precio definitivo será el correspondiente al día de la facturación.
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

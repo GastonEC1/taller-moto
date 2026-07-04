@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block title %}Órdenes de Trabajo{% endblock %}
+{% block content %}
+<div class="page-header d-print-none mb-3">
+  <div class="row align-items-center">
+    <div class="col"><h2 class="page-title"><i class="bi bi-clipboard2-check me-2"></i>Órdenes de Trabajo</h2></div>
+    <div class="col-auto"><a href="/ordenes/nueva" class="btn btn-warning text-white"><i class="bi bi-plus me-1"></i>Nueva orden</a></div>
+  </div>
+</div>
+<div class="card mb-3">
+  <div class="card-body py-2">
+    <form class="row g-2" method="get">
+      <div class="col-12 col-md-6">
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-search"></i></span>
+          <input type="text" name="q" class="form-control" placeholder="Buscar por cliente o dominio..." value="{{ q }}">
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <select name="estado" class="form-select">
+          <option value="" {{ 'selected' if not estado }}>Todos los estados</option>
+          <option value="abierta"  {{ 'selected' if estado=='abierta' }}>Abiertas</option>
+          <option value="cerrada"  {{ 'selected' if estado=='cerrada' }}>Cerradas</option>
+        </select>
+      </div>
+      <div class="col-6 col-md-3 d-flex gap-2">
+        <button class="btn btn-outline-secondary flex-grow-1">Filtrar</button>
+        {% if q or estado %}<a href="/ordenes" class="btn btn-outline-danger"><i class="bi bi-x"></i></a>{% endif %}
+      </div>
+    </form>
+  </div>
+</div>
+<div class="card">
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th style="width:50px">#</th>
+          <th>Cliente</th>
+          <th>Moto</th>
+          <th>Ingreso</th>
+          <th>Egreso</th>
+          <th>Estado</th>
+          <th class="text-end">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for o in ordenes %}
+        <tr>
+          <td class="text-muted">#{{ o.id }}</td>
+          <td class="fw-semibold">{{ o.cliente }}</td>
+          <td>{{ o.moto }} <span class="text-muted font-monospace" style="font-size:11px">{{ o.patente }}</span></td>
+          <td>{{ o.fecha_ingreso }}</td>
+          <td class="text-muted">{{ o.fecha_egreso or '—' }}</td>
+          <td><span class="badge-estado badge-{{ o.estado }}">{{ o.estado }}</span></td>
+          <td class="text-end">
+            <a href="/ordenes/{{ o.id }}" class="btn btn-sm btn-icon btn-outline-primary" title="Ver"><i class="bi bi-eye"></i></a>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7" class="text-center text-muted py-5">
+          <i class="bi bi-clipboard2" style="font-size:32px;display:block;margin-bottom:8px;opacity:.3"></i>
+          No hay órdenes.
+        </td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

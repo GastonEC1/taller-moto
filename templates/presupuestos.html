@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block title %}Presupuestos{% endblock %}
+{% block content %}
+<div class="page-header d-print-none mb-3">
+  <div class="row align-items-center">
+    <div class="col"><h2 class="page-title"><i class="bi bi-receipt me-2"></i>Presupuestos</h2></div>
+    <div class="col-auto"><a href="/presupuestos/nuevo" class="btn btn-info text-white"><i class="bi bi-plus me-1"></i>Nuevo presupuesto</a></div>
+  </div>
+</div>
+<div class="card mb-3">
+  <div class="card-body py-2">
+    <form class="row g-2" method="get">
+      <div class="col-12 col-md-6">
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-search"></i></span>
+          <input type="text" name="q" class="form-control" placeholder="Buscar por cliente o dominio..." value="{{ q }}">
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <select name="estado" class="form-select">
+          <option value="" {{ 'selected' if not estado }}>Todos los estados</option>
+          <option value="pendiente"  {{ 'selected' if estado=='pendiente' }}>Pendientes</option>
+          <option value="aprobado"   {{ 'selected' if estado=='aprobado' }}>Aprobados</option>
+          <option value="rechazado"  {{ 'selected' if estado=='rechazado' }}>Rechazados</option>
+        </select>
+      </div>
+      <div class="col-6 col-md-3 d-flex gap-2">
+        <button class="btn btn-outline-secondary flex-grow-1">Filtrar</button>
+        {% if q or estado %}<a href="/presupuestos" class="btn btn-outline-danger"><i class="bi bi-x"></i></a>{% endif %}
+      </div>
+    </form>
+  </div>
+</div>
+<div class="card">
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th style="width:50px">#</th>
+          <th>Cliente</th>
+          <th>Moto</th>
+          <th>Fecha</th>
+          <th>Estado</th>
+          <th class="text-end">Total</th>
+          <th class="text-end">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in presupuestos %}
+        <tr>
+          <td class="text-muted">#{{ p.id }}</td>
+          <td class="fw-semibold">{{ p.cliente }}</td>
+          <td>
+            {% if p.moto %}{{ p.moto }} <span class="text-muted font-monospace" style="font-size:11px">{{ p.patente }}</span>
+            {% else %}—{% endif %}
+          </td>
+          <td>{{ p.fecha }}</td>
+          <td><span class="badge-estado badge-{{ p.estado }}">{{ p.estado }}</span></td>
+          <td class="text-end fw-semibold">${{ '%.2f'|format(p.total) }}</td>
+          <td class="text-end">
+            <a href="/presupuestos/{{ p.id }}" class="btn btn-sm btn-icon btn-outline-primary" title="Ver"><i class="bi bi-eye"></i></a>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7" class="text-center text-muted py-5">
+          <i class="bi bi-receipt" style="font-size:32px;display:block;margin-bottom:8px;opacity:.3"></i>
+          No hay presupuestos.
+        </td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

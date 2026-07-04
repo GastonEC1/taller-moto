@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Editar' if orden else 'Nueva' }} Orden{% endblock %}
+{% block content %}
+<div class="page-header mb-3">
+  <div class="row align-items-center">
+    <div class="col-auto"><a href="/ordenes" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i>Volver</a></div>
+    <div class="col"><h2 class="page-title mb-0">{{ 'Editar' if orden else 'Nueva' }} Orden de Trabajo</h2></div>
+  </div>
+</div>
+<form method="post">
+  <div class="row g-3">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">Cliente y moto</div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Cliente *</label>
+              <select name="cliente_id" class="form-select" required id="sel-cliente">
+                <option value="">— Seleccionar —</option>
+                {% for c in clientes %}
+                <option value="{{ c.id }}" {{ 'selected' if orden and orden.cliente_id == c.id }}>{{ c.nombre }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Moto *</label>
+              <select name="vehiculo_id" class="form-select" required id="sel-moto">
+                <option value="">— Seleccionar —</option>
+                {% for v in motos %}
+                <option value="{{ v.id }}" data-cliente="{{ v.cliente_id }}"
+                        {{ 'selected' if orden and orden.vehiculo_id == v.id }}>{{ v.descripcion }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">Fechas y recepción</div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-6 col-md-3">
+              <label class="form-label">Ingreso *</label>
+              <input type="date" name="fecha_ingreso" class="form-control" required value="{{ orden.fecha_ingreso if orden else '' }}">
+            </div>
+            <div class="col-6 col-md-3">
+              <label class="form-label">Fecha estimada</label>
+              <input type="date" name="fecha_estimada" class="form-control" value="{{ orden.fecha_estimada if orden else '' }}">
+            </div>
+            <div class="col-6 col-md-3">
+              <label class="form-label">Egreso</label>
+              <input type="date" name="fecha_egreso" class="form-control" value="{{ orden.fecha_egreso if orden else '' }}">
+            </div>
+            <div class="col-6 col-md-3">
+              <label class="form-label">Kilómetros</label>
+              <input type="number" name="kilometros" class="form-control" min="0" value="{{ orden.kilometros if orden else '' }}">
+            </div>
+            <div class="col-md-5">
+              <label class="form-label">Receptor de servicio</label>
+              <input type="text" name="receptor_servicio" class="form-control" value="{{ orden.receptor_servicio if orden else '' }}">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Estado</label>
+              <select name="estado" class="form-select">
+                <option value="abierta" {{ 'selected' if not orden or orden.estado=='abierta' }}>Abierta</option>
+                <option value="cerrada" {{ 'selected' if orden and orden.estado=='cerrada' }}>Cerrada</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">Detalles técnicos</div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label">Diagnóstico / Manifestación del cliente</label>
+              <textarea name="diagnostico" class="form-control" rows="3" placeholder="Lo que el cliente manifiesta y el diagnóstico técnico...">{{ orden.diagnostico if orden else '' }}</textarea>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Trabajo realizado / por realizar</label>
+              <textarea name="descripcion_trabajo" class="form-control" rows="4">{{ orden.descripcion_trabajo if orden else '' }}</textarea>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Repuestos</label>
+              <div style="border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;margin-bottom:8px">
+                <table class="table table-bordered align-middle mb-0" id="tabla-repuestos">
+                  <thead style="background:#f8fafc">
+                    <tr>
+                      <th style="color:#374151;font-size:11px;text-transform:uppercase;letter-spacing:.5px;font-weight:600;padding:8px 12px">Descripción</th>
+                      <th style="width:110px;color:#374151;font-size:11px;text-transform:uppercase;letter-spacing:.5px;font-weight:600;padding:8px 12px">Cantidad</th>
+                      <th style="width:40px"></th>
+                    </tr>
+                  </thead>
+                  <tbody id="rep-body">
+                    {% for r in repuestos %}
+                    <tr>
+                      <td><input type="text" name="rep_desc" class="form-control form-control-sm" value="{{ r.descripcion }}" required></td>
+                      <td><input type="number" name="rep_cantidad" class="form-control form-control-sm" value="{{ r.cantidad }}" min="0.01" step="any"></td>
+                      <td><button type="button" class="btn btn-sm btn-icon btn-outline-danger btn-del-rep"><i class="bi bi-trash"></i></button></td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              <button type="button" class="btn btn-sm btn-outline-primary" id="btn-add-rep">
+                <i class="bi bi-plus me-1"></i>Agregar repuesto
+              </button>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Observaciones</label>
+              <textarea name="observaciones" class="form-control" rows="2">{{ orden.observaciones if orden else '' }}</textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12">
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-warning text-white">Guardar orden</button>
+        <a href="/ordenes" class="btn btn-outline-secondary">Cancelar</a>
+      </div>
+    </div>
+  </div>
+</form>
+{% endblock %}
+{% block scripts %}
+<script>
+const selCliente = document.getElementById('sel-cliente');
+const selMoto    = document.getElementById('sel-moto');
+const todasOpciones = Array.from(selMoto.options);
+
+function filtrarMotos() {
+  const cid = selCliente.value;
+  const valorActual = selMoto.value;
+  selMoto.innerHTML = '';
+  const placeholder = document.createElement('option');
+  placeholder.value = ''; placeholder.textContent = '— Seleccionar —';
+  selMoto.appendChild(placeholder);
+  todasOpciones.forEach(opt => {
+    if (opt.value === '') return;
+    if (!cid || opt.dataset.cliente === cid) selMoto.appendChild(opt.cloneNode(true));
+  });
+  if (valorActual) selMoto.value = valorActual;
+}
+
+selCliente.addEventListener('change', filtrarMotos);
+selMoto.addEventListener('change', function() {
+  const cid = this.options[this.selectedIndex].dataset.cliente;
+  if (cid) { selCliente.value = cid; filtrarMotos(); }
+});
+filtrarMotos();
+
+function addRepRow() {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><input type="text" name="rep_desc" class="form-control form-control-sm" placeholder="Ej: Pastillas de freno" required></td>
+    <td><input type="number" name="rep_cantidad" class="form-control form-control-sm" value="1" min="0.01" step="any"></td>
+    <td><button type="button" class="btn btn-sm btn-icon btn-outline-danger btn-del-rep"><i class="bi bi-trash"></i></button></td>
+  `;
+  tr.querySelector('.btn-del-rep').addEventListener('click', () => tr.remove());
+  document.getElementById('rep-body').appendChild(tr);
+}
+document.getElementById('btn-add-rep').addEventListener('click', addRepRow);
+document.querySelectorAll('.btn-del-rep').forEach(btn => {
+  btn.addEventListener('click', () => btn.closest('tr').remove());
+});
+</script>
+{% endblock %}

@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Editar' if moto else 'Nueva' }} Moto{% endblock %}
+{% block content %}
+<div class="page-header mb-3">
+  <div class="row align-items-center">
+    <div class="col-auto"><a href="/motos" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i>Volver</a></div>
+    <div class="col"><h2 class="page-title mb-0">{{ 'Editar' if moto else 'Nueva' }} Moto</h2></div>
+  </div>
+</div>
+<div class="row justify-content-center">
+  <div class="col-12 col-md-8">
+    <div class="card">
+      <div class="card-header">Datos de la moto</div>
+      <div class="card-body">
+        <form method="post">
+          <div class="row g-3">
+
+            <!-- Marca y Modelo -->
+            <div class="col-6">
+              <label class="form-label">Marca *</label>
+              <input type="text" name="marca" class="form-control" required
+                     list="marcas-list"
+                     value="{{ moto.marca if moto else '' }}"
+                     placeholder="Ej: Honda, Yamaha, Bajaj...">
+              <datalist id="marcas-list">
+                {% for m in ['Honda','Yamaha','Bajaj','Zanella','Motomel','Gilera','Beta',
+                             'Guerrero','Corven','KTM','Kawasaki','Suzuki','Royal Enfield',
+                             'Harley-Davidson','BMW','Ducati','Triumph','Husqvarna',
+                             'Benelli','CF Moto','Keeway','Rieju','Voge'] %}
+                <option value="{{ m }}">
+                {% endfor %}
+              </datalist>
+            </div>
+            <div class="col-6">
+              <label class="form-label">Modelo *</label>
+              <input type="text" name="modelo" class="form-control" required
+                     value="{{ moto.modelo if moto else '' }}"
+                     placeholder="Ej: CB 190, FZ 250, Pulsar NS...">
+            </div>
+
+            <!-- Dominio, Año, Color -->
+            <div class="col-5">
+              <label class="form-label">Dominio *</label>
+              <input type="text" name="patente" class="form-control font-monospace" required
+                     style="text-transform:uppercase;letter-spacing:2px"
+                     value="{{ moto.patente if moto else '' }}"
+                     placeholder="ABC123">
+            </div>
+            <div class="col-3">
+              <label class="form-label">Año</label>
+              <input type="number" name="anio" class="form-control" min="1950" max="2099"
+                     value="{{ moto.anio if moto else '' }}">
+            </div>
+            <div class="col-4">
+              <label class="form-label">Color</label>
+              <input type="text" name="color" class="form-control"
+                     value="{{ moto.color if moto else '' }}">
+            </div>
+
+            <!-- Tipo de moto y Cilindrada -->
+            <div class="col-6">
+              <label class="form-label">Tipo de moto</label>
+              <select name="tipo_moto" class="form-select">
+                <option value="">— Seleccionar —</option>
+                {% set tipos = ['Naked/Callejera', 'Deportiva', 'Enduro / Off-road', 'Scooter / Motoneta',
+                                'Custom / Chopper', 'Trail / Adventure', 'Cross / Motocross',
+                                'Turismo', 'Eléctrica', 'Cuatriciclo'] %}
+                {% for t in tipos %}
+                <option {{ 'selected' if moto and moto.tipo_moto == t }}>{{ t }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-6">
+              <label class="form-label">Cilindrada</label>
+              <input type="text" name="cilindrada" class="form-control"
+                     list="cilindradas-list"
+                     value="{{ moto.cilindrada if moto else '' }}"
+                     placeholder="Ej: 150cc, 250cc, 1200cc...">
+              <datalist id="cilindradas-list">
+                {% for cc in ['50cc','110cc','125cc','150cc','190cc','200cc','250cc',
+                              '300cc','400cc','450cc','500cc','600cc','650cc',
+                              '750cc','800cc','900cc','1000cc','1100cc','1200cc','1300cc'] %}
+                <option value="{{ cc }}">
+                {% endfor %}
+              </datalist>
+            </div>
+
+            <!-- Motor y Combustible -->
+            <div class="col-6">
+              <label class="form-label">Motor / Descripción</label>
+              <input type="text" name="motor" class="form-control"
+                     value="{{ moto.motor if moto else '' }}"
+                     placeholder="Ej: Monocilíndrico 4T, V-Twin...">
+            </div>
+            <div class="col-6">
+              <label class="form-label">Combustible</label>
+              <select name="combustible" class="form-select">
+                <option value="">—</option>
+                {% for c in ['Nafta','GNC','Eléctrico','Híbrido'] %}
+                <option {{ 'selected' if moto and moto.combustible == c }}>{{ c }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <!-- Nro. Chasis / VIN -->
+            <div class="col-12">
+              <label class="form-label">Nro. Chasis / VIN</label>
+              <input type="text" name="vin" class="form-control font-monospace"
+                     value="{{ moto.vin if moto else '' }}"
+                     placeholder="Número de chasis o VIN">
+            </div>
+
+            <!-- Cliente -->
+            <div class="col-12">
+              <label class="form-label">Cliente vinculado</label>
+              <select name="cliente_id" class="form-select">
+                <option value="">— Sin vincular —</option>
+                {% for c in clientes %}
+                <option value="{{ c.id }}" {{ 'selected' if moto and moto.cliente_id == c.id }}>{{ c.nombre }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+          </div>
+          <div class="mt-4 d-flex gap-2">
+            <button type="submit" class="btn btn-success">Guardar</button>
+            <a href="/motos" class="btn btn-outline-secondary">Cancelar</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
