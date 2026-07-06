@@ -46,12 +46,14 @@ if DATABASE_URL:
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ''')
-        # Migración: agregar columnas nuevas si no existen
+        # Migración: agregar columnas nuevas solo si no existen
         for col, definition in [('cilindrada', 'TEXT'), ('tipo_moto', 'TEXT')]:
-            try:
+            c.execute("""
+                SELECT column_name FROM information_schema.columns
+                WHERE table_name='vehiculos' AND column_name=%s
+            """, (col,))
+            if not c.fetchone():
                 c.execute(f'ALTER TABLE vehiculos ADD COLUMN {col} {definition}')
-            except Exception:
-                pass
         c.execute('''
             CREATE TABLE IF NOT EXISTS ordenes (
                 id SERIAL PRIMARY KEY,
