@@ -189,13 +189,9 @@
 <!-- NAVBAR -->
 <nav class="app-navbar d-print-none">
   <a href="/" class="d-flex align-items-center text-decoration-none me-4">
-    <div class="navbar-brand-box">
-      <!-- ícono de moto SVG -->
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="white" viewBox="0 0 16 16">
-        <path d="M4 4.5a.5.5 0 0 1 .5-.5H6a.5.5 0 0 1 0 1v.5h4.14l.386-1.158A.5.5 0 0 1 11 4h1a.5.5 0 0 1 0 1h-.64l-.311.935.807 1.29a3.5 3.5 0 1 1-.848.53l-.508-.812-2.076 3.322A.5.5 0 0 1 8 10.5H5.959a3.5 3.5 0 1 1-1.815-3.274L5 5.856V5h-.5a.5.5 0 0 1-.5-.5zm1.5 2.443-.508.814c.5.mondary.3.492.58.664L5.862 7.9a3.5 3.5 0 0 0-.362-.957zM8 9.967l1.5-2.4-.75-1.2H6.5L5.693 7.75A3.5 3.5 0 0 1 7.1 9.5h.554zM4.5 12a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zm7 0a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
-      </svg>
-    </div>
-    <span class="brand-name">Taller <span>Moto</span></span>
+    <img src="{{ url_for('static', filename='logo.png') }}"
+         alt="Logo" style="height:44px;width:44px;object-fit:contain;border-radius:6px;margin-right:10px;background:#fff;padding:2px;">
+    <span class="brand-name">FIAD <span>Motomecánica</span></span>
   </a>
   <button class="nav-toggler ms-auto btn btn-sm btn-outline-secondary border-0" onclick="toggleNav()" style="color:rgba(255,255,255,.6)">
     <i class="bi bi-list" style="font-size:20px"></i>

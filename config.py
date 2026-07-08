@@ -2,10 +2,10 @@
 # Editá estos datos con la información de tu taller
 
 TALLER = {
-    'nombre':    'Juan Carrizo',
-    'direccion': 'Higueritas 2800',
+    'nombre':    'Exequiel Fiad',
+    'direccion': 'Higueritas 2796',
     'ciudad':    'Yerba Buena - Tucumán',
-    'telefono':  '3815294362',
+    'telefono':  '3816985685',
     'cuit':      '00-00000000-0',
     'iva':       'Responsable Inscripto',
     'ing_brutos': '',

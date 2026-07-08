@@ -58,12 +58,16 @@
 
   <!-- ENCABEZADO -->
   <div class="header">
-    <div class="h-left">
-      <div class="taller-name">{{ taller.nombre }}</div>
-      <div class="taller-sub">
-        {{ taller.direccion }}<br>
-        {{ taller.ciudad }}<br>
-        Tel: {{ taller.telefono }}
+    <div class="h-left" style="display:flex;align-items:center;gap:8px">
+      <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo"
+           style="height:60px;width:60px;object-fit:contain;flex-shrink:0">
+      <div>
+        <div class="taller-name">{{ taller.nombre }}</div>
+        <div class="taller-sub">
+          {{ taller.direccion }}<br>
+          {{ taller.ciudad }}<br>
+          Tel: {{ taller.telefono }}
+        </div>
       </div>
     </div>
     <div class="h-right">

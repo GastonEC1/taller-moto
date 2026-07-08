@@ -59,12 +59,16 @@
 
   <!-- HEADER -->
   <div class="header">
-    <div class="h-left">
-      <div class="taller-name">{{ taller.nombre }}</div>
-      <div class="taller-sub">
-        {{ taller.direccion }}<br>
-        {{ taller.ciudad }}<br>
-        {{ taller.telefono }}
+    <div class="h-left" style="display:flex;align-items:center;gap:8px">
+      <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo"
+           style="height:60px;width:60px;object-fit:contain;flex-shrink:0">
+      <div>
+        <div class="taller-name">{{ taller.nombre }}</div>
+        <div class="taller-sub">
+          {{ taller.direccion }}<br>
+          {{ taller.ciudad }}<br>
+          {{ taller.telefono }}
+        </div>
       </div>
     </div>
     <div class="h-mid">
@@ -103,6 +107,7 @@
       <thead>
         <tr>
           <th>Descripción</th>
+          <th style="width:85px">Tipo</th>
           <th class="num" style="width:55px">En stock</th>
           <th class="num" style="width:60px">Cantidad</th>
           <th class="num" style="width:110px">Importe unitario</th>
@@ -113,6 +118,7 @@
         {% for it in items %}
         <tr>
           <td>{{ it.descripcion }}</td>
+          <td>{{ it.tipo or '' }}</td>
           <td class="center">{{ 'Sí' if it.en_stock else 'No' }}</td>
           <td class="num">{{ '{:.2f}'.format(it.cantidad) }}</td>
           <td class="num">${{ '{:,.2f}'.format(it.precio_unitario).replace(',','.') }}</td>
@@ -120,10 +126,10 @@
         </tr>
         {% endfor %}
         {% for _ in range([5 - items|length, 1]|max) %}
-        <tr><td>&nbsp;</td><td></td><td></td><td></td><td></td></tr>
+        <tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td></tr>
         {% endfor %}
         <tr class="total-row">
-          <td colspan="4" style="text-align:right">Total IVA incluido $</td>
+          <td colspan="5" style="text-align:right">Total IVA incluido $</td>
           <td class="num">${{ '{:,.2f}'.format(total).replace(',','.') }}</td>
         </tr>
       </tbody>
