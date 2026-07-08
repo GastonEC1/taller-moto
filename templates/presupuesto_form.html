@@ -3,6 +3,12 @@
 {% block content %}
 <h2 class="mb-3"><i class="bi bi-receipt"></i> {{ 'Editar' if presupuesto else 'Nuevo' }} Presupuesto</h2>
 <div class="card p-4">
+  <!-- Fuente de datos oculta para filtro de motos -->
+  <select id="all-motos" style="display:none">
+    {% for v in motos %}
+    <option value="{{ v.id }}" data-cliente="{{ v.cliente_id }}">{{ v.descripcion }}</option>
+    {% endfor %}
+  </select>
   <form method="post" id="form-presupuesto">
     <div class="row g-3 mb-4">
       <div class="col-md-5">
@@ -205,10 +211,27 @@ document.getElementById('btn-add-mano').addEventListener('click', () => addRow('
 document.getElementById('btn-add-repuesto').addEventListener('click', () => addRow('repuesto'));
 document.querySelectorAll('#items-body .item-card').forEach(bindCard);
 if (document.querySelectorAll('#items-body .item-card').length === 0) addRow('mano_de_obra');
-document.getElementById('sel-moto').addEventListener('change', function() {
-  const cid = this.options[this.selectedIndex].dataset.cliente;
-  if (cid) document.getElementById('sel-cliente').value = cid;
+function filtrarMotos() {
+  const cid = document.getElementById('sel-cliente').value;
+  const selMoto = document.getElementById('sel-moto');
+  const current = selMoto.value;
+  selMoto.innerHTML = '<option value="">— Opcional —</option>';
+  document.querySelectorAll('#all-motos option').forEach(opt => {
+    if (!cid || opt.dataset.cliente === cid) {
+      selMoto.appendChild(opt.cloneNode(true));
+    }
+  });
+  if (current) selMoto.value = current;
+}
+document.getElementById('sel-cliente').addEventListener('change', function() {
+  document.getElementById('sel-moto').value = '';
+  filtrarMotos();
 });
+document.getElementById('sel-moto').addEventListener('change', function() {
+  const cid = this.options[this.selectedIndex]?.dataset.cliente;
+  if (cid) { document.getElementById('sel-cliente').value = cid; filtrarMotos(); }
+});
+filtrarMotos();
 calcTotal();
 </script>
 {% endblock %}
