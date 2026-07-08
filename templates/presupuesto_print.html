@@ -106,8 +106,8 @@
     <table class="items-table">
       <thead>
         <tr>
-          <th>Descripción</th>
           <th style="width:85px">Tipo</th>
+          <th>Descripción</th>
           <th class="num" style="width:55px">En stock</th>
           <th class="num" style="width:60px">Cantidad</th>
           <th class="num" style="width:110px">Importe unitario</th>
@@ -117,8 +117,8 @@
       <tbody>
         {% for it in items %}
         <tr>
+          <td>{{ {'mano_de_obra': 'Mano de obra', 'repuesto': 'Repuesto', 'otro': 'Otro'}.get(it.tipo, it.tipo or '') }}</td>
           <td>{{ it.descripcion }}</td>
-          <td>{{ it.tipo or '' }}</td>
           <td class="center">{{ 'Sí' if it.en_stock else 'No' }}</td>
           <td class="num">{{ '{:.2f}'.format(it.cantidad) }}</td>
           <td class="num">${{ '{:,.2f}'.format(it.precio_unitario).replace(',','.') }}</td>
